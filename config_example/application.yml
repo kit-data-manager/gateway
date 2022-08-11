@@ -1,0 +1,29 @@
+# Gateway config docs: https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/
+# Circuit Breaker (filter) docs: https://cloud.spring.io/spring-cloud-circuitbreaker/reference/html/spring-cloud-circuitbreaker.html
+# spring.cloud.circuitbreaker.resilience4j.enabled
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: github_to_kitdm_group
+        uri: https://github.com/
+        predicates:
+        - Path=/github/**
+        filters:
+        - RewritePath=/github/?(?<segment>.*), /$\{segment}
+        - name: CircuitBreaker
+          args:
+            name: myCircuitBreaker
+            fallbackUri: forward:/notfound
+      - id: notfound_to_example_404
+        uri: https://example.org
+        predicates:
+        - Path=/notfound
+        filters:
+        - RewritePath=/notfound, /
+        - SetStatus=404
+
+# Interesting logging levels: https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/#log-levels
+logging:
+  level:
+    '[org.springframework.cloud.gateway]': TRACE
