@@ -7,13 +7,21 @@ This is the simplest Spring Cloud Gateway implementation possible. The idea is t
 
 ## Usage
 
+If you want to run it straight from the repository (e.g., for development or compiling on the server):
+
 ```bash
-# build
+# build only
 ./gradlew build
-# configure and run
-cd build/libs
-cp ../../config_example ./
-java -jar gateway-0.0.1-SNAPSHOT.jar
+# run with config (also builds if this did not happen before)
+./gradlew run --args="--spring.config.location=config_example/application.yml"
 ```
 
-Remember to restart the application if you change the configuration file.
+If you only use the JAR file on your server:
+
+```bash
+java -jar gateway.jar --spring.config.location=path/to/config/file.yml
+```
+
+> **Note**
+> 
+> Remember to restart the application if you change the configuration file.
