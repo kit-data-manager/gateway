@@ -1,15 +1,36 @@
 # Gateway config docs: https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/
 # Circuit Breaker (filter) docs: https://cloud.spring.io/spring-cloud-circuitbreaker/reference/html/spring-cloud-circuitbreaker.html
+server:
+    port: 8090
+    
+
 spring:
   cloud:
     gateway:
       routes:
-      - id: github_to_kitdm_group
-        uri: https://github.com/
+      - id: base-repo
+        uri: http://localhost:8081/
         predicates:
-        - Path=/github/**
+        - Path=/api/v1/dataresources/**
         filters:
-        - RewritePath=/github/?(?<segment>.*), /$\{segment}
+        - name: CircuitBreaker
+          args:
+            name: myCircuitBreaker
+            fallbackUri: forward:/notfound
+      - id: metastore_documents
+        uri: http://localhost:8082/
+        predicates:
+        - Path=/api/v1/metadata/**
+        filters:
+        - name: CircuitBreaker
+          args:
+            name: myCircuitBreaker
+            fallbackUri: forward:/notfound      
+      - id: metastore_schemas
+        uri: http://localhost:8082/
+        predicates:
+        - Path=/api/v1/schemas/**
+        filters:
         - name: CircuitBreaker
           args:
             name: myCircuitBreaker
@@ -21,8 +42,29 @@ spring:
         filters:
         - RewritePath=/notfound, /
         - SetStatus=404
+  boot:
+    admin:
+      client:
+        url: http://localhost:8060
+        username: admin
+        password: admin-password
+        instance:
+          name: Gateway
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+      health:
+        show-details: ALWAYS
+  info:
+    env:
+      enabled: true
 # Interesting logging levels: https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/#log-levels
 logging:
   level:
-    '[org.springframework.cloud.gateway]': TRACE
+    '[org.springframework.cloud.gateway]': INFO
+    
+    

@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.3'
-	id 'io.spring.dependency-management' version '1.1.0'
+	id 'org.springframework.boot' version '2.7.7'
+        id 'io.spring.dependency-management' version '1.1.0' 
 	id 'java'
 	id 'application'
 }
@@ -18,8 +18,10 @@ ext {
 }
 
 dependencies {
+        implementation 'de.codecentric:spring-boot-admin-starter-client:2.7.10'
 	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j'
 	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
 }
@@ -36,4 +38,25 @@ tasks.named('test') {
 
 application {
     mainClass = 'edu.kit.datamanager.gateway.GatewayApplication'
+}
+
+springBoot {    
+    buildInfo()
+}
+
+bootJar {
+    println 'Create bootable jar...'
+    archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
+    }
+    launchScript()
+}
+
+// task for printing project name.
+task printProjectName {
+    doLast {
+        println "${project.name}"
+    }
 }
