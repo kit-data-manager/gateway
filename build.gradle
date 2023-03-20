@@ -18,7 +18,7 @@ ext {
 }
 
 dependencies {
-        implementation 'de.codecentric:spring-boot-admin-starter-client:2.7.10'
+        implementation 'de.codecentric:spring-boot-admin-starter-client:3.0.2'
 	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j'
 	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
 
